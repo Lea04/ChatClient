@@ -14,15 +14,28 @@ import java.util.List;
 
 public class MulticastClientService {
 
+
+    private OrderingReliabilityService orderingReliabilityService;
+
     public void receiveChatMessage(ClientMessage chatMessage) throws IOException {
         VectorClockSingleton.getInstance().updateVectorclock();
-        chatMessage.getVectorClockEntries().forEach(externalVectorClock -> {
-            VectorClockSingleton.getInstance().updateExternalVectorclockEntries(externalVectorClock);
-        });
-        String content = chatMessage.getContent();
-        ClientConfigurationSingleton.getInstance().setLastReceivedChattMessage(content + "\n");
-        Main.setRoot("/chat");
+
+        if((ClientConfigurationSingleton.getInstance().getSequenceNumber()+1)!= chatMessage.getQueueIdCounter()){
+            orderingReliabilityService.nack(chatMessage);
+        }
+        else{
+            chatMessage.getVectorClockEntries().forEach(externalVectorClock -> {
+                VectorClockSingleton.getInstance().updateExternalVectorclockEntries(externalVectorClock);
+            });
+            String content = chatMessage.getContent();
+            ClientConfigurationSingleton.getInstance().setLastReceivedChattMessage(content + "\n");
+            Main.setRoot("/chat");
+
+            ClientConfigurationSingleton.getInstance().increaseSequenceNumber();
+
+        }
     }
+
 
     public void handleLeaderAnnouncement(InetAddress address) {
         ClientConfigurationSingleton.getInstance().setLeader(address);

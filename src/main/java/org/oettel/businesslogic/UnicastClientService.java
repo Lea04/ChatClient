@@ -27,4 +27,14 @@ public class UnicastClientService {
     }
 
 
+    public void receiveNackMessage(ClientMessage chatMessage) throws IOException {
+
+        String content = chatMessage.getContent();
+        ClientConfigurationSingleton.getInstance().setLastReceivedChattMessage(content + "\n");
+        Main.setRoot("/chat");
+        ClientConfigurationSingleton.getInstance().increaseSequenceNumber();
+
+
+    }
+
 }

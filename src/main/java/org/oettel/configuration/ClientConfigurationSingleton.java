@@ -1,6 +1,12 @@
 package org.oettel.configuration;
 
+import org.oettel.model.message.ClientMessage;
+import org.oettel.model.message.Message;
+
 import java.net.InetAddress;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 public class ClientConfigurationSingleton {
     private static ClientConfigurationSingleton instance;
@@ -10,6 +16,7 @@ public class ClientConfigurationSingleton {
     private String clientName;
     private String lastReceivedChattMessage = "";
     private int sequenceNumber;
+    List<ClientMessage> holdbackQueue = new ArrayList<>();
 
     private ClientConfigurationSingleton() {
     }
@@ -58,6 +65,9 @@ public class ClientConfigurationSingleton {
     public void setSequenceNumber(int sequenceNumber) {
         this.sequenceNumber = sequenceNumber;
     }
+    public void increaseSequenceNumber() {
+        this.sequenceNumber = this.sequenceNumber+1;
+    }
 
     public String getLastReceivedChattMessage() {
         return lastReceivedChattMessage;
@@ -66,6 +76,18 @@ public class ClientConfigurationSingleton {
     public void setLastReceivedChattMessage(String lastReceivedChattMessage) {
         System.out.println(lastReceivedChattMessage);
         this.lastReceivedChattMessage = this.lastReceivedChattMessage + lastReceivedChattMessage;
+    }
+
+    public void addMessageToHoldbackQueue(ClientMessage message) {
+        this.holdbackQueue.add(message);
+    }
+
+    public int getSequenceNumber() {
+        return sequenceNumber;
+    }
+
+    public List<ClientMessage> getHoldbackQueue() {
+        return holdbackQueue;
     }
 }
 

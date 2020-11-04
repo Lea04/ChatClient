@@ -65,6 +65,9 @@ public class UnicastListener implements Runnable {
             case CLIENT_HEARTBEAT:
                 unicastServerService.respondToClientHeartbeat(inetAddress);
                 break;
+            case CHAT_MESSAGE:
+                unicastServerService.receiveNackMessage(clientMessage);
+                break;
             default:
                 break;
         }
