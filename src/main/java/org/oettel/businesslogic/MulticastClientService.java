@@ -1,11 +1,15 @@
 package org.oettel.businesslogic;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.oettel.Main;
 import org.oettel.configuration.ClientConfigurationSingleton;
 import org.oettel.model.message.ClientMessage;
+import org.oettel.model.message.ClientMessageType;
 import org.oettel.model.message.InetMessage;
+import org.oettel.model.message.Message;
 import org.oettel.model.vectorclock.VectorClockEntry;
 import org.oettel.model.vectorclock.VectorClockSingleton;
+import org.oettel.sender.UnicastSender;
 
 import java.io.IOException;
 import java.net.InetAddress;
@@ -20,10 +24,10 @@ public class MulticastClientService {
     public void receiveChatMessage(ClientMessage chatMessage) throws IOException {
         VectorClockSingleton.getInstance().updateVectorclock();
 
-        if((ClientConfigurationSingleton.getInstance().getSequenceNumber()+1)!= chatMessage.getQueueIdCounter()){
-            orderingReliabilityService.nack(chatMessage);
-        }
-        else{
+        //if((ClientConfigurationSingleton.getInstance().getSequenceNumber()+1)!= chatMessage.getQueueIdCounter()){
+            this.nack(chatMessage);
+        //}
+        //else{
             chatMessage.getVectorClockEntries().forEach(externalVectorClock -> {
                 VectorClockSingleton.getInstance().updateExternalVectorclockEntries(externalVectorClock);
             });
@@ -33,7 +37,7 @@ public class MulticastClientService {
 
             ClientConfigurationSingleton.getInstance().increaseSequenceNumber();
 
-        }
+        //}
     }
 
 
@@ -65,4 +69,22 @@ public class MulticastClientService {
             VectorClockSingleton.getInstance().setVectorClockEntryList(newList);
         }
     }
+
+    ObjectMapper mapper = new ObjectMapper();
+
+    public void nack(ClientMessage chatMessage) throws IOException {
+
+        int count = ClientConfigurationSingleton.getInstance().getSequenceNumber();
+
+        if (count < chatMessage.getQueueIdCounter()){
+            for (int counter = (count + 1); counter <= chatMessage.getQueueIdCounter(); counter++) {
+                Message nackMessage = new ClientMessage(ClientMessageType.NACK, "nack", counter);
+                UnicastSender unicastSender = new UnicastSender(ClientConfigurationSingleton.getInstance().getLeader());
+                String messageJson = mapper.writeValueAsString(nackMessage);
+                unicastSender.sendMessage(messageJson);
+                unicastSender.close();
+            }
+        }
+    }
+
 }

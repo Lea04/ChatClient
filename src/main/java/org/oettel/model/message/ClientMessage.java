@@ -46,6 +46,7 @@ public class ClientMessage extends Message {
         super(MessageType.CLIENT_MESSAGE, content);
         this.clientMessageType = clientMessageType;
         this.vectorClockEntries = vectorClockEntryList;
+        this.queueIdCounter=queueIdCounter;
     }
 
     public ClientMessageType getClientMessageType() {

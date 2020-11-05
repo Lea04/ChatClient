@@ -50,7 +50,7 @@ public class LoginController {
         ClientConfigurationSingleton.getInstance().setServerPort(serverPort);
         try {
             ClientConfigurationSingleton.getInstance().setServerAddress(InetAddress.getByAddress(InetAddress.getLocalHost().getAddress()));
-            ClientConfigurationSingleton.getInstance().setSequenceNumber(0);
+            ClientConfigurationSingleton.getInstance().setSequenceNumber(1);
         } catch (UnknownHostException e) {
             e.printStackTrace();
         }
