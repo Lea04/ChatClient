@@ -24,20 +24,31 @@ public class MulticastClientService {
     public void receiveChatMessage(ClientMessage chatMessage) throws IOException {
         VectorClockSingleton.getInstance().updateVectorclock();
 
-        //if((ClientConfigurationSingleton.getInstance().getSequenceNumber()+1)!= chatMessage.getQueueIdCounter()){
-            this.nack(chatMessage);
-        //}
-        //else{
-            chatMessage.getVectorClockEntries().forEach(externalVectorClock -> {
-                VectorClockSingleton.getInstance().updateExternalVectorclockEntries(externalVectorClock);
-            });
-            String content = chatMessage.getContent();
+        this.nack(chatMessage);
+        this.order();
+
+        chatMessage.getVectorClockEntries().forEach(externalVectorClock -> {
+            VectorClockSingleton.getInstance().updateExternalVectorclockEntries(externalVectorClock);
+        });
+
+
+        ClientConfigurationSingleton.getInstance().getDeliveryQueue().forEach(queueMessage->{
+            String content = queueMessage.getContent();
             ClientConfigurationSingleton.getInstance().setLastReceivedChattMessage(content + "\n");
-            Main.setRoot("/chat");
-
+            try {
+                Main.setRoot("/chat");
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
             ClientConfigurationSingleton.getInstance().increaseSequenceNumber();
+        });
 
-        //}
+/*        String content = chatMessage.getContent();
+        ClientConfigurationSingleton.getInstance().setLastReceivedChattMessage(content + "\n");
+        Main.setRoot("/chat");
+        ClientConfigurationSingleton.getInstance().increaseSequenceNumber();*/
+
+
     }
 
 
@@ -85,6 +96,15 @@ public class MulticastClientService {
                 unicastSender.close();
             }
         }
+        else{
+            ClientConfigurationSingleton.getInstance().getHoldbackQueue().add(chatMessage);
+        }
+
+    }
+
+    public void order() throws IOException {
+        ClientConfigurationSingleton.getInstance().setDeliveryQueue(ClientConfigurationSingleton.getInstance().getHoldbackQueue());
+
     }
 
 }

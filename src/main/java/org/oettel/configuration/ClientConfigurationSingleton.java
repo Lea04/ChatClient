@@ -17,6 +17,7 @@ public class ClientConfigurationSingleton {
     private String lastReceivedChattMessage = "";
     private int sequenceNumber;
     List<ClientMessage> holdbackQueue = new ArrayList<>();
+    List<ClientMessage> deliveryQueue = new ArrayList<>();
 
     private ClientConfigurationSingleton() {
     }
@@ -88,6 +89,14 @@ public class ClientConfigurationSingleton {
 
     public List<ClientMessage> getHoldbackQueue() {
         return holdbackQueue;
+    }
+
+    public List<ClientMessage> getDeliveryQueue() {
+        return deliveryQueue;
+    }
+
+    public void setDeliveryQueue(List<ClientMessage> deliveryQueue) {
+        this.deliveryQueue = deliveryQueue;
     }
 }
 
