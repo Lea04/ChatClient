@@ -72,7 +72,7 @@ public class VectorClockSingleton {
 
             while(ClientConfigurationSingleton.getInstance().getHoldbackQueue().size() > 0) {
                 List<VectorClockEntry> newList = new ArrayList<>();
-                ClientConfigurationSingleton.getInstance().getHoldbackQueue().forEach(holdbackMessage -> {
+                ClientConfigurationSingleton.getInstance().getHoldbackQueue().stream().forEach(holdbackMessage -> {
                     AtomicBoolean istSmallest = new AtomicBoolean(false);
                     ClientConfigurationSingleton.getInstance().getHoldbackQueue().forEach(holdbackMessageCompare ->{
                         for(int i = 0; i < holdbackMessage.getVectorClockEntries().size();i++){

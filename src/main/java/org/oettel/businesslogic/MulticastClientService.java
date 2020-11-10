@@ -92,35 +92,4 @@ public class MulticastClientService {
         }
     }
 
-/*    public void order() throws IOException {
-
-        if(ClientConfigurationSingleton.getInstance().getHoldbackQueue().size() > 1) {
-
-            while(ClientConfigurationSingleton.getInstance().getHoldbackQueue().size() > 0) {
-                List<VectorClockEntry> newList = new ArrayList<>();
-                ClientConfigurationSingleton.getInstance().getHoldbackQueue().forEach(holdbackMessage -> {
-                    AtomicBoolean istSmallest = new AtomicBoolean(false);
-                    ClientConfigurationSingleton.getInstance().getHoldbackQueue().forEach(holdbackMessageCompare ->{
-                        for(int i = 0; i < holdbackMessage.getVectorClockEntries().size();i++){
-                            if(holdbackMessage.getVectorClockEntries().get(i).getClockCount()== holdbackMessageCompare.getVectorClockEntries().get(i).getClockCount()){
-                                istSmallest.set(true);
-                            }else if(holdbackMessage.getVectorClockEntries().get(i).getClockCount()< holdbackMessageCompare.getVectorClockEntries().get(i).getClockCount()){
-                                istSmallest.set(true);
-                            }else if(holdbackMessage.getVectorClockEntries().get(i).getClockCount()> holdbackMessageCompare.getVectorClockEntries().get(i).getClockCount()){
-                                istSmallest.set(false);
-                            }
-                        }
-                    });
-                    if(istSmallest.get()){
-                        ClientConfigurationSingleton.getInstance().getDeliveryQueue().add(holdbackMessage);
-                        ClientConfigurationSingleton.getInstance().getHoldbackQueue().remove(holdbackMessage);
-                    }
-                });
-
-            }
-        }else{
-            ClientConfigurationSingleton.getInstance().setDeliveryQueue(ClientConfigurationSingleton.getInstance().getHoldbackQueue());
-        }
-    }*/
-
 }
