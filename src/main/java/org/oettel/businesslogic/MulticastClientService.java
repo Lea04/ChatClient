@@ -28,7 +28,7 @@ public class MulticastClientService {
         //this.nack(chatMessage);
         //this.order();
 
-        chatMessage.getVectorClockEntries().forEach(externalVectorClock -> {
+/*        chatMessage.getVectorClockEntries().forEach(externalVectorClock -> {
             VectorClockSingleton.getInstance().updateExternalVectorclockEntries(externalVectorClock);
         });
 
@@ -43,15 +43,15 @@ public class MulticastClientService {
             }
             ClientConfigurationSingleton.getInstance().increaseSequenceNumber();
         });
-        ClientConfigurationSingleton.getInstance().getDeliveryQueue().clear();
+        ClientConfigurationSingleton.getInstance().getDeliveryQueue().clear();*/
 
        //--end
-        /*
+
         String content = chatMessage.getContent();
         ClientConfigurationSingleton.getInstance().setLastReceivedChattMessage(content + "\n");
         Main.setRoot("/chat");
         ClientConfigurationSingleton.getInstance().increaseSequenceNumber();
-        */
+
 
     }
 
