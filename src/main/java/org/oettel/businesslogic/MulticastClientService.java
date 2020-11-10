@@ -22,36 +22,22 @@ public class MulticastClientService {
     private OrderingReliabilityService orderingReliabilityService;
 
     public void receiveChatMessage(ClientMessage chatMessage) throws IOException {
-        VectorClockSingleton.getInstance().updateVectorclock();
+
 
         //--start
-        //this.nack(chatMessage);
-        //this.order();
-
-/*        chatMessage.getVectorClockEntries().forEach(externalVectorClock -> {
-            VectorClockSingleton.getInstance().updateExternalVectorclockEntries(externalVectorClock);
-        });
-
-
+        ClientConfigurationSingleton.getInstance().getHoldbackQueue().add(chatMessage);
+        this.nack(chatMessage);
+        VectorClockSingleton.getInstance().order();
+        VectorClockSingleton.getInstance().updateVectorclock();
         ClientConfigurationSingleton.getInstance().getDeliveryQueue().forEach(queueMessage->{
             String content = queueMessage.getContent();
             ClientConfigurationSingleton.getInstance().setLastReceivedChattMessage(content + "\n");
-            try {
-                Main.setRoot("/chat");
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+
             ClientConfigurationSingleton.getInstance().increaseSequenceNumber();
         });
-        ClientConfigurationSingleton.getInstance().getDeliveryQueue().clear();*/
-
-       //--end
-
-        String content = chatMessage.getContent();
-        ClientConfigurationSingleton.getInstance().setLastReceivedChattMessage(content + "\n");
         Main.setRoot("/chat");
-        ClientConfigurationSingleton.getInstance().increaseSequenceNumber();
 
+        ClientConfigurationSingleton.getInstance().getHoldbackQueue().clear();
 
     }
 
@@ -92,7 +78,7 @@ public class MulticastClientService {
         int count = ClientConfigurationSingleton.getInstance().getSequenceNumber();
 
         if (count < chatMessage.getQueueIdCounter()){
-            for (int counter = (count + 1); counter <= chatMessage.getQueueIdCounter(); counter++) {
+            for (int counter = (count + 1); counter < chatMessage.getQueueIdCounter(); counter++) {
                 Message nackMessage = new ClientMessage(ClientMessageType.NACK, "nack", counter);
                 UnicastSender unicastSender = new UnicastSender(ClientConfigurationSingleton.getInstance().getLeader());
                 String messageJson = mapper.writeValueAsString(nackMessage);
@@ -100,13 +86,9 @@ public class MulticastClientService {
                 unicastSender.close();
             }
         }
-        else{
-            ClientConfigurationSingleton.getInstance().getHoldbackQueue().add(chatMessage);
-        }
-
     }
 
-    public void order() throws IOException {
+/*    public void order() throws IOException {
 
         if(ClientConfigurationSingleton.getInstance().getHoldbackQueue().size() > 1) {
 
@@ -135,9 +117,6 @@ public class MulticastClientService {
         }else{
             ClientConfigurationSingleton.getInstance().setDeliveryQueue(ClientConfigurationSingleton.getInstance().getHoldbackQueue());
         }
-
-
-
-    }
+    }*/
 
 }

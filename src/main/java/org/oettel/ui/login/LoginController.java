@@ -74,7 +74,7 @@ public class LoginController {
         } catch (SocketException e) {
             e.printStackTrace();
         } catch (IOException e) {
-            e.printStackTrace();
+            //e.printStackTrace();
         }
     }
 

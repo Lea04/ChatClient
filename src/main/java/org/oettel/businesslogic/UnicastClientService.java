@@ -29,11 +29,12 @@ public class UnicastClientService {
 
     public void receiveNackMessage(ClientMessage chatMessage) throws IOException {
         ClientConfigurationSingleton.getInstance().getHoldbackQueue().add(chatMessage);
-        /*String content = chatMessage.getContent();
+        ClientConfigurationSingleton.getInstance().increaseSequenceNumber();
+        String content = chatMessage.getContent();
         ClientConfigurationSingleton.getInstance().setLastReceivedChattMessage(content + "\n");
         Main.setRoot("/chat");
         ClientConfigurationSingleton.getInstance().increaseSequenceNumber();
-        */
+        ClientConfigurationSingleton.getInstance().getHoldbackQueue().add(chatMessage);
 
     }
 
