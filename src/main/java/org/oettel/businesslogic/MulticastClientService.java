@@ -5,7 +5,6 @@ import org.oettel.Main;
 import org.oettel.configuration.ClientConfigurationSingleton;
 import org.oettel.model.message.ClientMessage;
 import org.oettel.model.message.ClientMessageType;
-import org.oettel.model.message.InetMessage;
 import org.oettel.model.message.Message;
 import org.oettel.model.vectorclock.VectorClockEntry;
 import org.oettel.model.vectorclock.VectorClockSingleton;
@@ -15,6 +14,7 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class MulticastClientService {
 
@@ -24,15 +24,16 @@ public class MulticastClientService {
     public void receiveChatMessage(ClientMessage chatMessage) throws IOException {
         VectorClockSingleton.getInstance().updateVectorclock();
 
-        this.nack(chatMessage);
-        this.order();
+        //--start
+        //this.nack(chatMessage);
+        //this.order();
 
         chatMessage.getVectorClockEntries().forEach(externalVectorClock -> {
             VectorClockSingleton.getInstance().updateExternalVectorclockEntries(externalVectorClock);
         });
 
 
-        ClientConfigurationSingleton.getInstance().getDeliveryQueue().forEach(queueMessage->{
+        /*ClientConfigurationSingleton.getInstance().getDeliveryQueue().forEach(queueMessage->{
             String content = queueMessage.getContent();
             ClientConfigurationSingleton.getInstance().setLastReceivedChattMessage(content + "\n");
             try {
@@ -42,11 +43,14 @@ public class MulticastClientService {
             }
             ClientConfigurationSingleton.getInstance().increaseSequenceNumber();
         });
+        ClientConfigurationSingleton.getInstance().getDeliveryQueue().clear();
 
-/*        String content = chatMessage.getContent();
+       */ //--end
+
+        String content = chatMessage.getContent();
         ClientConfigurationSingleton.getInstance().setLastReceivedChattMessage(content + "\n");
         Main.setRoot("/chat");
-        ClientConfigurationSingleton.getInstance().increaseSequenceNumber();*/
+        ClientConfigurationSingleton.getInstance().increaseSequenceNumber();
 
 
     }
@@ -103,7 +107,36 @@ public class MulticastClientService {
     }
 
     public void order() throws IOException {
-        ClientConfigurationSingleton.getInstance().setDeliveryQueue(ClientConfigurationSingleton.getInstance().getHoldbackQueue());
+
+        if(ClientConfigurationSingleton.getInstance().getHoldbackQueue().size() > 1) {
+
+            while(ClientConfigurationSingleton.getInstance().getHoldbackQueue().size() > 0) {
+                List<VectorClockEntry> newList = new ArrayList<>();
+                ClientConfigurationSingleton.getInstance().getHoldbackQueue().forEach(holdbackMessage -> {
+                    AtomicBoolean istSmallest = new AtomicBoolean(false);
+                    ClientConfigurationSingleton.getInstance().getHoldbackQueue().forEach(holdbackMessageCompare ->{
+                        for(int i = 0; i < holdbackMessage.getVectorClockEntries().size();i++){
+                            if(holdbackMessage.getVectorClockEntries().get(i).getClockCount()== holdbackMessageCompare.getVectorClockEntries().get(i).getClockCount()){
+                                istSmallest.set(true);
+                            }else if(holdbackMessage.getVectorClockEntries().get(i).getClockCount()< holdbackMessageCompare.getVectorClockEntries().get(i).getClockCount()){
+                                istSmallest.set(true);
+                            }else if(holdbackMessage.getVectorClockEntries().get(i).getClockCount()> holdbackMessageCompare.getVectorClockEntries().get(i).getClockCount()){
+                                istSmallest.set(false);
+                            }
+                        }
+                    });
+                    if(istSmallest.get()){
+                        ClientConfigurationSingleton.getInstance().getDeliveryQueue().add(holdbackMessage);
+                        ClientConfigurationSingleton.getInstance().getHoldbackQueue().remove(holdbackMessage);
+                    }
+                });
+
+            }
+        }else{
+            ClientConfigurationSingleton.getInstance().setDeliveryQueue(ClientConfigurationSingleton.getInstance().getHoldbackQueue());
+        }
+
+
 
     }
 
