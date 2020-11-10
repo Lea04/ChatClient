@@ -30,8 +30,8 @@ public class MulticastClientService {
         if(ClientConfigurationSingleton.getInstance().getHoldbackQueue().size()>1){
             int i = 99;
         }
-        VectorClockSingleton.getInstance().order();
-        //ClientConfigurationSingleton.getInstance().setDeliveryQueue(ClientConfigurationSingleton.getInstance().getHoldbackQueue());
+        //VectorClockSingleton.getInstance().order();
+        ClientConfigurationSingleton.getInstance().setDeliveryQueue(ClientConfigurationSingleton.getInstance().getHoldbackQueue());
         VectorClockSingleton.getInstance().updateVectorclock();
         ClientConfigurationSingleton.getInstance().getDeliveryQueue().forEach(queueMessage->{
             String content = queueMessage.getContent();
