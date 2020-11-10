@@ -27,7 +27,11 @@ public class MulticastClientService {
         //--start
         ClientConfigurationSingleton.getInstance().getHoldbackQueue().add(chatMessage);
         this.nack(chatMessage);
+        if(ClientConfigurationSingleton.getInstance().getHoldbackQueue().size()>1){
+            int i = 99;
+        }
         VectorClockSingleton.getInstance().order();
+        //ClientConfigurationSingleton.getInstance().setDeliveryQueue(ClientConfigurationSingleton.getInstance().getHoldbackQueue());
         VectorClockSingleton.getInstance().updateVectorclock();
         ClientConfigurationSingleton.getInstance().getDeliveryQueue().forEach(queueMessage->{
             String content = queueMessage.getContent();
@@ -36,7 +40,7 @@ public class MulticastClientService {
             ClientConfigurationSingleton.getInstance().increaseSequenceNumber();
         });
         Main.setRoot("/chat");
-
+        ClientConfigurationSingleton.getInstance().getDeliveryQueue().clear();
         ClientConfigurationSingleton.getInstance().getHoldbackQueue().clear();
 
     }

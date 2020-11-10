@@ -45,6 +45,7 @@ public class ChatController {
 
     @FXML
     private void sendChatMessage() throws IOException {
+        ClientConfigurationSingleton.getInstance().getHoldbackQueue().clear();
         this.unicastSender = new UnicastSender(ClientConfigurationSingleton.getInstance().getLeader());
         String[] splittedLabelText = labelUsernameChat.getText().split(":");
         String username = splittedLabelText[1].replace(" ", "");
