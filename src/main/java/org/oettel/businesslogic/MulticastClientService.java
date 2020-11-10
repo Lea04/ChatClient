@@ -25,7 +25,7 @@ public class MulticastClientService {
 
 
         //--start
-        ClientConfigurationSingleton.getInstance().getHoldbackQueue().add(chatMessage);
+        ClientConfigurationSingleton.getInstance().getHoldbackQueue().add(0,chatMessage);//add(chatMessage);
         this.nack(chatMessage);
         if(ClientConfigurationSingleton.getInstance().getHoldbackQueue().size()>1){
             int i = 99;
