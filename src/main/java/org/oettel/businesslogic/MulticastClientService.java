@@ -38,8 +38,13 @@ public class MulticastClientService {
             ClientConfigurationSingleton.getInstance().setLastReceivedChattMessage(content + "\n");
 
             ClientConfigurationSingleton.getInstance().increaseSequenceNumber();
+            try {
+                Main.setRoot("/chat");
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         });
-        Main.setRoot("/chat");
+
         ClientConfigurationSingleton.getInstance().getDeliveryQueue().clear();
         ClientConfigurationSingleton.getInstance().getHoldbackQueue().clear();
 
