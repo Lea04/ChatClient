@@ -41,7 +41,7 @@ public class MulticastClientService {
             try {
                 Main.setRoot("/chat");
             } catch (IOException e) {
-                e.printStackTrace();
+                //e.printStackTrace();
             }
         });
 
