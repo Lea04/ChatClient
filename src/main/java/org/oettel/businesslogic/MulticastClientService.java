@@ -33,7 +33,7 @@ public class MulticastClientService {
         });
 
 
-        /*ClientConfigurationSingleton.getInstance().getDeliveryQueue().forEach(queueMessage->{
+        ClientConfigurationSingleton.getInstance().getDeliveryQueue().forEach(queueMessage->{
             String content = queueMessage.getContent();
             ClientConfigurationSingleton.getInstance().setLastReceivedChattMessage(content + "\n");
             try {
@@ -45,13 +45,13 @@ public class MulticastClientService {
         });
         ClientConfigurationSingleton.getInstance().getDeliveryQueue().clear();
 
-       */ //--end
-
+       //--end
+        /*
         String content = chatMessage.getContent();
         ClientConfigurationSingleton.getInstance().setLastReceivedChattMessage(content + "\n");
         Main.setRoot("/chat");
         ClientConfigurationSingleton.getInstance().increaseSequenceNumber();
-
+        */
 
     }
 
