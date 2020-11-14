@@ -21,9 +21,7 @@ public class MulticastClientService {
 
     public void receiveChatMessage(ClientMessage chatMessage) throws IOException {
 
-        chatMessage.getVectorClockEntries().forEach(externalVectorClock -> {
-            VectorClockSingleton.getInstance().updateExternalVectorclockEntries(externalVectorClock);
-        });
+
 
         //--start
         ClientConfigurationSingleton.getInstance().getHoldbackQueue().add(0,chatMessage);//add(chatMessage);
@@ -34,6 +32,9 @@ public class MulticastClientService {
         //VectorClockSingleton.getInstance().order();
         ClientConfigurationSingleton.getInstance().setDeliveryQueue(ClientConfigurationSingleton.getInstance().getHoldbackQueue());
         VectorClockSingleton.getInstance().updateVectorclock();
+        chatMessage.getVectorClockEntries().forEach(externalVectorClock -> {
+            VectorClockSingleton.getInstance().updateExternalVectorclockEntries(externalVectorClock);
+        });
         ClientConfigurationSingleton.getInstance().getDeliveryQueue().forEach(queueMessage->{
             String content = queueMessage.getContent();
             ClientConfigurationSingleton.getInstance().setLastReceivedChattMessage(content + "\n");
