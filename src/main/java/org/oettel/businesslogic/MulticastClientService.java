@@ -19,8 +19,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class MulticastClientService {
 
 
-    private OrderingReliabilityService orderingReliabilityService;
-
     public void receiveChatMessage(ClientMessage chatMessage) throws IOException {
 
         chatMessage.getVectorClockEntries().forEach(externalVectorClock -> {
