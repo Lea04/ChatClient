@@ -23,6 +23,9 @@ public class MulticastClientService {
 
     public void receiveChatMessage(ClientMessage chatMessage) throws IOException {
 
+        chatMessage.getVectorClockEntries().forEach(externalVectorClock -> {
+            VectorClockSingleton.getInstance().updateExternalVectorclockEntries(externalVectorClock);
+        });
 
         //--start
         ClientConfigurationSingleton.getInstance().getHoldbackQueue().add(0,chatMessage);//add(chatMessage);
