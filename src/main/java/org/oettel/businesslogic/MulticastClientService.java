@@ -47,6 +47,11 @@ public class MulticastClientService {
             }
         });
 
+        VectorClockSingleton.getInstance().getVectorClockEntryList().forEach(vectorClockEntry -> {
+            System.out.print("Address: " + vectorClockEntry.getIpAdress().toString() + " ");
+            System.out.println("Clockcount: " + vectorClockEntry.getClockCount());
+        });
+
         ClientConfigurationSingleton.getInstance().getDeliveryQueue().clear();
         ClientConfigurationSingleton.getInstance().getHoldbackQueue().clear();
 

@@ -47,13 +47,17 @@ public class VectorClockSingleton {
     public void updateExternalVectorclockEntries(VectorClockEntry externalVectorClock) {
         String internalAddress = ClientConfigurationSingleton.getInstance().getServerAddress().toString();
         vectorClockEntryList.forEach(internalVectorClock -> {
+
             if (!externalVectorClock.getIpAdress().toString().contains(internalAddress)) {
                 int newValue = compareClockCounts(internalVectorClock.getClockCount(), externalVectorClock.getClockCount());
                 internalVectorClock.setClockCount(newValue);
             }
+
         });
 
+
     }
+
 
     private int compareClockCounts(int internalClockCount, int externalClockCount) {
         if (internalClockCount < externalClockCount) {
