@@ -16,9 +16,9 @@ import static org.oettel.configuration.Constants.MULTICAST_PORT;
 public class MulticastListener implements Runnable {
     private MulticastSocket multicastSocket;
     private boolean running;
-    private byte[] buf = new byte[512];
+    private byte[] buf = new byte[912];
     private InetAddress addressGroup;
-    byte[] receivedJson = new byte[512];
+    byte[] receivedJson = new byte[912];
     ObjectMapper mapper = new ObjectMapper();
     private MulticastClientService multicastClientService;
 
@@ -38,6 +38,7 @@ public class MulticastListener implements Runnable {
                     = new DatagramPacket(buf, buf.length);
             try {
                 multicastSocket.receive(packet);
+
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -73,6 +74,7 @@ public class MulticastListener implements Runnable {
         switch (clientMessage.getClientMessageType()) {
             case CHAT_MESSAGE:
                 multicastClientService.receiveChatMessage(clientMessage);
+                multicastSocket.receive(packet);
                 break;
             case LEADER_ANNOUNCEMENT:
                 multicastClientService.handleLeaderAnnouncement( packet.getAddress());
