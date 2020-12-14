@@ -35,39 +35,37 @@ public class VectorClockSingleton {
         this.vectorClockEntryList.add(vectorClockEntry);
     }
 
+
     public void updateVectorclock() {
-        InetAddress localAddress = ClientConfigurationSingleton.getInstance().getServerAddress();
-        vectorClockEntryList.forEach(vectorClockEntry -> {
-            if(vectorClockEntry.getIpAdress().toString().contains(localAddress.toString())){
-                vectorClockEntry.addOneToCount();
+        String internalAdress = ClientConfigurationSingleton.getInstance().getServerAddress().toString();
+        this.vectorClockEntryList.forEach(vectorClockEntry -> {
+            if(vectorClockEntry.getIpAdress().toString().contains(internalAdress)) {
+                vectorClockEntry.addCount();
             }
         });
     }
 
-    public void updateExternalVectorclockEntries(VectorClockEntry externalVectorClock) {
-        String internalAddress = ClientConfigurationSingleton.getInstance().getServerAddress().toString();
-        vectorClockEntryList.forEach(internalVectorClock -> {
-
-            if (!externalVectorClock.getIpAdress().toString().contains(internalAddress)) {
-                int newValue = compareClockCounts(internalVectorClock.getClockCount(), externalVectorClock.getClockCount());
-                internalVectorClock.setClockCount(newValue);
+    public void updateExternalVectorclockEntries(VectorClockEntry externalVectorClockEntry) {
+        String internalAdress = ClientConfigurationSingleton.getInstance().getServerAddress().toString();
+        this.vectorClockEntryList.forEach(vectorClockEntry -> {
+            if(!vectorClockEntry.getIpAdress().toString().contains(internalAdress)
+                    && vectorClockEntry.getIpAdress().toString().contains(externalVectorClockEntry.getIpAdress().getHostAddress())) {
+                int higherValue = compareVectorClockValues(vectorClockEntry, externalVectorClockEntry);
+                vectorClockEntry.setClockCount(higherValue);
             }
-
         });
-
-
     }
 
-
-    private int compareClockCounts(int internalClockCount, int externalClockCount) {
-        if (internalClockCount < externalClockCount) {
-            return externalClockCount;
-        } else if (internalClockCount > externalClockCount) {
-            return internalClockCount;
+    private int compareVectorClockValues(VectorClockEntry vectorClockEntry, VectorClockEntry externalVectorClockEntry) {
+        if(vectorClockEntry.getClockCount() < externalVectorClockEntry.getClockCount()) {
+            return externalVectorClockEntry.getClockCount();
+        } else if (vectorClockEntry.getClockCount() > externalVectorClockEntry.getClockCount()) {
+            return vectorClockEntry.getClockCount();
         } else {
-            return internalClockCount;
+            return vectorClockEntry.getClockCount();
         }
     }
+
 
 
     public void order() throws IOException {
