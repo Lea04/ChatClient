@@ -74,7 +74,6 @@ public class MulticastListener implements Runnable {
         switch (clientMessage.getClientMessageType()) {
             case CHAT_MESSAGE:
                 multicastClientService.receiveChatMessage(clientMessage);
-                multicastSocket.receive(packet);
                 break;
             case LEADER_ANNOUNCEMENT:
                 multicastClientService.handleLeaderAnnouncement( packet.getAddress());
