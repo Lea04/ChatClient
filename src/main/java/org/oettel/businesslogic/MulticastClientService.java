@@ -29,7 +29,7 @@ public class MulticastClientService {
         if(ClientConfigurationSingleton.getInstance().getHoldbackQueue().size()>1){
             int i = 99;
         }
-        //VectorClockSingleton.getInstance().order();
+        VectorClockSingleton.getInstance().order();
         ClientConfigurationSingleton.getInstance().setDeliveryQueue(ClientConfigurationSingleton.getInstance().getHoldbackQueue());
         VectorClockSingleton.getInstance().updateVectorclock();
         chatMessage.getVectorClockEntries().forEach(externalVectorClock -> {
